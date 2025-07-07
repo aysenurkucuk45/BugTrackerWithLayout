@@ -1,0 +1,56 @@
+﻿@model IEnumerable<BugTrackerWithLayout.Models.Bug>
+
+@{
+    ViewBag.Title = "Hata Listesi";
+}
+
+<h2>Hata Listesi</h2>
+
+<p>
+    <a href="@Url.Action("Create")" class="btn btn-success">Yeni Hata Ekle</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Başlık</th>
+            <th>Açıklama</th>
+            <th>Öncelik</th>
+            <th>Durum</th>
+            <th>Bildiren</th>
+            <th>Tarih</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Description</td>
+                <td>@item.Priority</td>
+                <td>
+                    @if (item.Status == "Açık")
+                    {
+                        <span class="label label-warning">Açık</span>
+                    }
+                    else if (item.Status == "Çözüldü")
+                    {
+                        <span class="label label-success">Çözüldü</span>
+                    }
+                    else
+                    {
+                        <span class="label label-default">@item.Status</span>
+                    }
+                </td>
+                <td>@item.ReportedBy</td>
+                <td>@item.CreatedAt.ToShortDateString()</td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-primary btn-sm">Düzenle</a>
+                    <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-danger btn-sm">Sil</a>
+                    <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-success btn-sm">Çözüm Ekle</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

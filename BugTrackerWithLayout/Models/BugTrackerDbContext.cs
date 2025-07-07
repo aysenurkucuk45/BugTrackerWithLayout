@@ -1,0 +1,13 @@
+﻿using System.Collections.Generic;
+using System.Data.Entity;
+
+namespace BugTrackerWithLayout.Models
+{
+    public class BugTrackerDbContext : DbContext
+    {
+        public BugTrackerDbContext() : base("BugTrackerDbContext") { }
+
+        public DbSet<Bug> Bugs { get; set; }
+
+    }
+}

@@ -1,0 +1,35 @@
+﻿[HttpPost]
+[ValidateAntiForgeryToken]
+public ActionResult Create([Bind(Include = "Id,Title,Description,Priority,Status,ReportedBy,CreatedAt")] Bug bug, HttpPostedFileBase file)
+{
+    if (ModelState.IsValid)
+    {
+        // Dosya yükleme işlemi
+        if (file != null && file.ContentLength > 0)
+        {
+            // Dosya adını belirle
+            string fileName = Path.GetFileName(file.FileName);
+
+            // Dosya kaydedileceği yolu oluştur
+            string uploadPath = Server.MapPath("~/Uploads");
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            // Dosyanın tam yolu
+            string filePath = Path.Combine(uploadPath, fileName);
+            file.SaveAs(filePath);
+
+            // Veritabanına kaydedilecek yollar
+            bug.Attachment = fileName;
+            bug.FilePath = "/Uploads/" + fileName;
+        }
+
+        db.Bugs.Add(bug);
+        db.SaveChanges();
+        return RedirectToAction("Index");
+    }
+
+    return View(bug);
+}
