@@ -20,10 +20,3 @@ GitHub: [@aysenurkucuk45](https://github.com/aysenurkucuk45)
 - Models/ → Veri modelleri
 - Migrations/ → EF veritabanı geçişleri
 
-## Proje Ekran Görüntüleri
-![Hakkında](https://github.com/aysenurkucuk45/BugTrackerWithLayout/blob/master/Screenshots/Ekran%20g%C3%B6r%C3%BCnt%C3%BCs%C3%BC%202025-07-18%20103807.png?raw=true)
-
-![Hata Listesi](https://github.com/aysenurkucuk45/BugTrackerWithLayout/blob/master/Screenshots/Ekran%20g%C3%B6r%C3%BCnt%C3%BCs%C3%BC%202025-07-18%20112153.png?raw=true)
-
-![Yeni Hata Ekleme](https://github.com/aysenurkucuk45/BugTrackerWithLayout/blob/master/Screenshots/Ekran%20g%C3%B6r%C3%BCnt%C3%BCs%C3%BC%202025-07-18%20112207.png?raw=true)
-
