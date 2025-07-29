@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "Giriş Yap";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Giriş Yap</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+@*@<p>Giriş yapan: @User.Identity.Name</p>*@
+
+<form method="post" class="form-horizontal" style="max-width: 400px;">
+    <div class="form-group">
+        <label for="username">Kullanıcı Adı</label>
+        <input type="text" name="username" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="password">Şifre</label>
+        <input type="password" name="password" class="form-control" required />
+    </div>
+    <p>
+        <a href="@Url.Action("ForgotPassword", "Account")">Şifremi unuttum</a>
+    </p>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Giriş Yap</button>
+        <a href="/Account/ForgotPassword" class="btn btn-link">Şifremi Unuttum</a>
+    </div>
+</form>

@@ -1,35 +1,63 @@
-﻿[HttpPost]
-[ValidateAntiForgeryToken]
-public ActionResult Create([Bind(Include = "Id,Title,Description,Priority,Status,ReportedBy,CreatedAt")] Bug bug, HttpPostedFileBase file)
+﻿@model BugTrackerWithLayout.Models.Bug
+
+@{
+    ViewBag.Title = "Yeni Hata Ekle";
+}
+
+<h2>Yeni Hata Ekle</h2>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    if (ModelState.IsValid)
-    {
-        // Dosya yükleme işlemi
-        if (file != null && file.ContentLength > 0)
-        {
-            // Dosya adını belirle
-            string fileName = Path.GetFileName(file.FileName);
+    @Html.AntiForgeryToken()
 
-            // Dosya kaydedileceği yolu oluştur
-            string uploadPath = Server.MapPath("~/Uploads");
-            if (!Directory.Exists(uploadPath))
-            {
-                Directory.CreateDirectory(uploadPath);
-            }
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
 
-            // Dosyanın tam yolu
-            string filePath = Path.Combine(uploadPath, fileName);
-            file.SaveAs(filePath);
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+            </div>
+        </div>
 
-            // Veritabanına kaydedilecek yollar
-            bug.Attachment = fileName;
-            bug.FilePath = "/Uploads/" + fileName;
-        }
+        <div class="form-group">
+            @Html.LabelFor(model => model.Priority, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Priority, ViewBag.PriorityList as SelectList, "Öncelik Seçiniz", new { @class = "form-control" })
+            </div>
+        </div>
 
-        db.Bugs.Add(bug);
-        db.SaveChanges();
-        return RedirectToAction("Index");
-    }
+        <div class="form-group">
+            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Status, ViewBag.StatusList as SelectList, "Durum Seçiniz", new { @class = "form-control" })
+            </div>
+        </div>
 
-    return View(bug);
+        <div class="form-group">
+            @Html.LabelFor(model => model.CategoryId, "Kategori", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.CategoryId, ViewBag.CategoryId as SelectList, "Kategori Seçiniz", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Dosya Ekle", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="file" name="file" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Kaydet" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
 }

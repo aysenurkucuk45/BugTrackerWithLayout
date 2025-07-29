@@ -64,7 +64,17 @@
             </div>
         </div>
 
-        <!-- Yeni Eklenen: Dosya Yükleme Alanı -->
+        <!-- ✅ Kategori Alanı Görsel -->
+        <div class="form-group">
+            <label class="control-label col-md-2">Kategori</label>
+            <div class="col-md-10">
+                <p class="form-control-static">
+                    @(Model.Category != null ? Model.Category.Name : "Kategori Yok")
+                </p>
+            </div>
+        </div>
+
+        <!-- 🔁 Dosya Yükleme Alanı -->
         <div class="form-group">
             <label class="control-label col-md-2">Dosya Güncelle</label>
             <div class="col-md-10">
@@ -86,4 +96,26 @@
 
 <div>
     @Html.ActionLink("Geri Dön", "Index", null, new { @class = "btn btn-default" })
+</div>
+<div class="form-group">
+    @Html.Label("Kategori", htmlAttributes: new { @class = "control-label col-md-2" })
+    <div class="col-md-10">
+        @Html.DropDownList("CategoryId", null, "Kategori Seçin", new { @class = "form-control" })
+        @Html.ValidationMessage("CategoryId", "", new { @class = "text-danger" })
+    </div>
+</div>
+<div class="form-group">
+    @Html.LabelFor(model => model.CategoryId,
+                   "Kategori",
+                   htmlAttributes: new { @class = "control-label col-md-2" })
+
+    <div class="col-md-10">
+        @Html.DropDownList("CategoryId",
+                           ViewBag.CategoryId as SelectList,
+                           "Kategori Seçiniz",
+                           new { @class = "form-control" })
+
+        @Html.ValidationMessageFor(model => model.CategoryId, "",
+                                   new { @class = "text-danger" })
+    </div>
 </div>

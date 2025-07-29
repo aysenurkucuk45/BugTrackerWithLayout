@@ -28,6 +28,12 @@
         <dt>@Html.DisplayNameFor(model => model.CreatedAt)</dt>
         <dd>@Html.DisplayFor(model => model.CreatedAt)</dd>
 
+        <!-- Kategori kısmı -->
+        <dt>Kategori</dt>
+        <dd>
+            @(Model.Category != null ? Model.Category.Name : "Kategori Yok")
+        </dd>
+
         <dt>Dosya</dt>
         <dd>
             @if (!string.IsNullOrEmpty(Model.FilePath))
@@ -46,7 +52,6 @@
                 <span>Yüklenmiş dosya yok.</span>
             }
         </dd>
-
     </dl>
 </div>
 

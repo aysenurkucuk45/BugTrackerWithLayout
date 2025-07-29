@@ -1,0 +1,14 @@
+﻿@model BugTrackerWithLayout.ViewModels.UserProfileViewModel
+
+@{
+    ViewBag.Title = "Profilim";
+}
+
+<div class="container">
+    <h2>Kullanıcı Bilgileri</h2>
+    <div class="well">
+        <p><strong>Kullanıcı Adı:</strong> @Model.Username</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Rol:</strong> @Model.Role</p>
+    </div>
+</div>

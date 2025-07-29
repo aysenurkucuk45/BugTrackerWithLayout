@@ -8,5 +8,14 @@ namespace BugTrackerWithLayout.Controllers
         {
             return View();
         }
+        public ActionResult About()
+        {
+            return View();
+        }
+        public ActionResult TestGrid()
+        {
+            return View();
+        }
+
     }
 }

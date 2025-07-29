@@ -1,0 +1,8 @@
+﻿@model int?
+
+@using (Html.BeginForm("ClearSolution", "Bug", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("id", Model)
+    <button type="submit" class="btn btn-sm btn-danger" style="margin-top:5px;">Çözümü Sil</button>
+}

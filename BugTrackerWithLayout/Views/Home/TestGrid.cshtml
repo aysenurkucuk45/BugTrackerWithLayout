@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ParamQuery Grid Testi</h2>
+
+<div id="grid"></div>
+
+<script>
+    $(function () {
+        var data = [
+            { id: 1, ad: "Ayşe", soyad: "Yılmaz", sehir: "Ankara" },
+            { id: 2, ad: "Mehmet", soyad: "Kaya", sehir: "İstanbul" },
+            { id: 3, ad: "Zeynep", soyad: "Demir", sehir: "İzmir" },
+            { id: 4, ad: "Ali", soyad: "Can", sehir: "Bursa" },
+            { id: 5, ad: "Elif", soyad: "Kurt", sehir: "Eskişehir" }
+        ];
+
+        $("#grid").pqGrid({
+            width: 700,
+            height: 300,
+            dataModel: { data: data },
+            colModel: [
+                { title: "ID", dataIndx: "id", width: 50 },
+                { title: "Ad", dataIndx: "ad", width: 150 },
+                { title: "Soyad", dataIndx: "soyad", width: 150 },
+                { title: "Şehir", dataIndx: "sehir", width: 200 }
+            ]
+        });
+    });
+</script>

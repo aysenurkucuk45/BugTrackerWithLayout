@@ -1,18 +1,189 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+    color: #000; /* varsayılan yazı rengi */
 }
 
-/* Set padding to keep content from hitting the edges */
+/* Sayfa kenar boşlukları */
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
+/* Form alanı genişlikleri */
 input,
 select,
 textarea {
     max-width: 280px;
 }
 
+/* === AÇIK TEMA === */
+body.light {
+    background-color: #ffffff; /* ✅ açık zemin */
+    color: #000000; /* ✅ koyu yazı */
+}
+
+    body.light a {
+        color: #337ab7;
+    }
+
+    body.light h1,
+    body.light h2,
+    body.light h3,
+    body.light h4,
+    body.light h5,
+    body.light h6,
+    body.light p,
+    body.light td,
+    body.light th,
+    body.light strong,
+    body.light label,
+    body.light legend,
+    body.light .panel-title {
+        color: #000000 !important;
+    }
+
+/* === KOYU TEMA === */
+body.dark {
+    background-color: #121212 !important;
+    color: #ffffff !important;
+}
+
+    body.dark a {
+        color: #90caf9;
+    }
+
+    body.dark h1,
+    body.dark h2,
+    body.dark h3,
+    body.dark h4,
+    body.dark h5,
+    body.dark h6,
+    body.dark p,
+    body.dark td,
+    body.dark th,
+    body.dark strong,
+    body.dark label,
+    body.dark legend,
+    body.dark .panel-title {
+        color: #ffffff !important;
+    }
+
+/* NAVBAR */
+body.light .navbar {
+    background-color: #f8f8f8;
+    border-color: #e7e7e7;
+}
+
+body.dark .navbar {
+    background-color: #222;
+    border-color: #000;
+}
+
+/* NAVBAR yazı renkleri */
+.navbar-inverse .navbar-nav > li > a,
+.navbar-inverse .navbar-brand,
+.navbar-inverse .navbar-nav > .dropdown > a.dropdown-toggle {
+    color: #ffffff !important;
+}
+
+    .navbar-inverse .navbar-nav > li > a:hover,
+    .navbar-inverse .navbar-nav > .dropdown > a.dropdown-toggle:hover {
+        color: #ffffff !important;
+        background-color: #444 !important;
+    }
+
+.navbar-default {
+    background-color: #f8f8f8;
+    border-color: #e7e7e7;
+}
+
+    .navbar-default .navbar-brand,
+    .navbar-default .navbar-nav > li > a,
+    .navbar-default .navbar-nav > .dropdown > a.dropdown-toggle {
+        color: #000 !important;
+        font-weight: bold;
+    }
+
+        .navbar-default .navbar-nav > li > a:hover,
+        .navbar-default .navbar-nav > .dropdown > a.dropdown-toggle:hover {
+            background-color: #e6e6e6 !important;
+            color: #000 !important;
+        }
+
+/* .dark-mode alternatifi */
+.dark-mode {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+    .dark-mode a,
+    .dark-mode p,
+    .dark-mode td,
+    .dark-mode th,
+    .dark-mode h1,
+    .dark-mode h2,
+    .dark-mode h3,
+    .dark-mode h4,
+    .dark-mode h5,
+    .dark-mode label,
+    .dark-mode legend {
+        color: #000;
+    }
+
+/* Silik başlık ve yazılar için kesin çözüm */
+h1, h2, h3, h4, h5, h6 {
+    color: #000 !important;
+    opacity: 1 !important;
+    filter: none !important;
+}
+
+/* Koyu temada yazılar net görünsün */
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark h5,
+body.dark h6 {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    filter: none !important;
+}
+
+/* Hakkında başlığı özel id */
+#aboutTitle {
+    color: #000 !important;
+    opacity: 1 !important;
+    filter: none !important;
+    font-weight: bold !important;
+}
+.btn {
+    color: #fff !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
+}
+
+/* Daha fazla görünürlük için özel stiller */
+.btn-info {
+    background-color: #5bc0de;
+    border-color: #46b8da;
+    color: #fff !important;
+}
+
+.btn-warning {
+    background-color: #f0ad4e;
+    border-color: #eea236;
+    color: #fff !important;
+}
+
+.btn-danger {
+    background-color: #d9534f;
+    border-color: #d43f3a;
+    color: #fff !important;
+}
+
+.btn-success {
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+    color: #fff !important;
+}

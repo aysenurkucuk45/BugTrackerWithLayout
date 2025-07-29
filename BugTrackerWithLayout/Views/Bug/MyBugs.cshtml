@@ -1,0 +1,43 @@
+﻿@model BugTrackerWithLayout.ViewModels.UserProfileViewModel
+
+@{
+    ViewBag.Title = "Hatalarım";
+}
+
+<h2>Hatalarımı Listele</h2>
+
+@if (Model.Bugs != null && Model.Bugs.Any())
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Başlık</th>
+                <th>Durum</th>
+                <th>Öncelik</th>
+                <th>Tarih</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bug in Model.Bugs)
+            {
+                <tr>
+                    <td>@bug.Title</td>
+                    <td>@bug.Status</td>
+                    <td>@bug.Priority</td>
+                    <td>@bug.CreatedAt.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        <a href="@Url.Action("Details", "Bug", new { id = bug.Id })" class="btn btn-info btn-sm">Detay</a>
+                        <a href="@Url.Action("Edit", "Bug", new { id = bug.Id })" class="btn btn-warning btn-sm">Düzenle</a>
+                        <a href="@Url.Action("Delete", "Bug", new { id = bug.Id })" class="btn btn-danger btn-sm">Sil</a>
+                        <a href="@Url.Action("AddSolution", "Bug", new { id = bug.Id })" class="btn btn-success btn-sm">Çözüm Ekle</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Hata bildirimi bulunamadı.</p>
+}

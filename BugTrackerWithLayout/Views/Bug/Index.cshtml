@@ -1,16 +1,16 @@
-﻿@model IEnumerable<BugTrackerWithLayout.Models.Bug>
-
+﻿@model PagedList.IPagedList<BugTrackerWithLayout.Models.Bug>
+@using PagedList.Mvc
 @{
-    ViewBag.Title = "Hata Listesi";
+    ViewBag.Title = "Hata Takip Listesi";
 }
 
-<h2>Hata Listesi</h2>
+<h2>Bütün Hatalar</h2>
 
 <p>
     <a href="@Url.Action("Create")" class="btn btn-success">Yeni Hata Ekle</a>
 </p>
 
-<table class="table table-bordered table-striped">
+<table class="table table-bordered table-hover">
     <thead>
         <tr>
             <th>Başlık</th>
@@ -20,27 +20,46 @@
             <th>Bildiren</th>
             <th>Tarih</th>
             <th>İşlemler</th>
+            <th>Kategori</th>
         </tr>
     </thead>
+
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
                 <td>@item.Title</td>
                 <td>@item.Description</td>
-                <td>@item.Priority</td>
                 <td>
-                    @if (item.Status == "Açık")
+                    @if (item.Priority == "Yüksek")
                     {
-                        <span class="label label-warning">Açık</span>
+                        <span class="badge bg-danger">Yüksek</span>
                     }
-                    else if (item.Status == "Çözüldü")
+                    else if (item.Priority == "Orta")
                     {
-                        <span class="label label-success">Çözüldü</span>
+                        <span class="badge bg-warning text-dark">Orta</span>
                     }
                     else
                     {
-                        <span class="label label-default">@item.Status</span>
+                        <span class="badge bg-secondary">Düşük</span>
+                    }
+                </td>
+                <td>
+                    @if (item.Status == "Açık")
+                    {
+                        <span class="badge bg-warning text-dark">Açık</span>
+                    }
+                    else if (item.Status == "Çözüldü")
+                    {
+                        <span class="badge bg-success">Çözüldü</span>
+                    }
+                    else if (item.Status == "Devam Ediyor")
+                    {
+                        <span class="badge bg-info text-dark">Devam Ediyor</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@item.Status</span>
                     }
                 </td>
                 <td>@item.ReportedBy</td>
@@ -50,7 +69,68 @@
                     <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-danger btn-sm">Sil</a>
                     <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-success btn-sm">Çözüm Ekle</a>
                 </td>
+                <td>
+                    @if (item.Category != null)
+                    {
+                        @item.Category.Name
+                    }
+                    else
+                    {
+                        <span class="text-muted fst-italic">Kategori Yok</span>
+                    }
+                </td>
+
+
             </tr>
         }
     </tbody>
 </table>
+
+<!-- Sayfalama -->
+<div class="d-flex justify-content-center mt-4">
+
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+    new PagedListRenderOptions
+    {
+        Display = PagedListDisplayMode.IfNeeded,
+        DisplayPageCountAndCurrentLocation = false,
+        MaximumPageNumbersToDisplay = 5,
+
+        // Bu satırlarla kenar butonlarını kaldırıyoruz
+        DisplayLinkToFirstPage = PagedListDisplayMode.Never,
+        DisplayLinkToLastPage = PagedListDisplayMode.Never,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+        DisplayLinkToNextPage = PagedListDisplayMode.Never
+    })
+
+</div>
+
+<style>
+    /* Sayfalama düğmeleri için boşluk ve stil */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+        .pagination > li > a,
+        .pagination > li > span {
+            margin: 0 6px;
+            padding: 6px 12px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .pagination > .active > a {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .pagination > li > a:hover {
+            background-color: #e2e6ea;
+        }
+</style>
+
