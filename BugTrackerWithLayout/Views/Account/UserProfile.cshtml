@@ -1,16 +1,137 @@
 ﻿@model BugTrackerWithLayout.ViewModels.UserProfileViewModel
 
 @{
-    ViewBag.Title = "Hesabım";
+    ViewBag.Title = "Profilim";
 }
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Kullanıcı Bilgileri</h3>
-    </div>
-    <div class="panel-body">
-        <p><strong>Kullanıcı Adı:</strong> @Model.Username</p>
-        <p><strong>E-posta:</strong> @Model.Email</p>
-        <p><strong>Rol:</strong> @Model.Role</p>
+<div class="container mt-4">
+    <div class="row">
+        <!-- Sol: Profil bilgileri -->
+        <div class="col-md-3 text-center">
+            <img src="@Url.Content(Model.ProfileImagePath ?? "~/Content/default-profile.png")"
+                 class="img-thumbnail rounded-circle mb-3"
+                 style="width: 150px; height: 150px;" />
+            <h4>@Model.Username</h4>
+            <p>@Model.Email</p>
+            <span class="badge bg-secondary">@Model.Role</span>
+
+            <form method="post" action="@Url.Action("UpdateProfileImage", "User")" class="mt-3">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label for="selectedImage">Profil Karakterini Seç:</label>
+                    <select name="selectedImage" class="form-control" required>
+                        <option value="">-- Seçin --</option>
+                       
+                        <option value="Tom">Tom</option>
+                        <option value="Jerry">Jerry</option>
+                        
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm mt-2">Güncelle</button>
+            </form>
+        </div>
+
+        <!-- Sağ: Grafik ve açıklamalar -->
+        <div class="col-md-9 text-center">
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <strong>Hata Durumu Dağılımı</strong>
+                </div>
+                <div class="card-body">
+
+                    <!-- Grafik tipi seçme -->
+                    <div class="mb-3">
+                        <label for="chartTypeSelect"><strong>Grafik Tipi:</strong></label>
+                        <select id="chartTypeSelect" class="form-control" style="max-width:200px; display:inline-block;">
+                            <option value="doughnut">Pasta Grafik</option>
+                            <option value="bar">Sütun Grafik</option>
+                        </select>
+                    </div>
+
+                    <div style="max-width: 500px; margin: auto;">
+                        <canvas id="bugStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Açıklamalı veriler -->
+            <div class="mt-4 text-start" style="max-width: 400px; margin: auto;">
+                <p><strong>🔹 Toplam Hata:</strong> @Model.TotalBugs</p>
+                <p><strong>🟥 Açık:</strong> @Model.OpenBugCount</p>
+                <p><strong>🟨 Devam Ediyor:</strong> @Model.InProgressBugCount</p>
+                <p><strong>🟩 Çözülen:</strong> @Model.ResolvedBugCount</p>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('bugStatusChart').getContext('2d');
+
+    // Ortak veri
+    var chartData = {
+        labels: ['Açık', 'Devam Ediyor', 'Çözüldü'],
+        datasets: [{
+            label: 'Durum Dağılımı',
+            data: [
+                @Model.OpenBugCount,
+                @Model.InProgressBugCount,
+                @Model.ResolvedBugCount
+            ],
+            backgroundColor: ['#dc3545', '#ffc107', '#28a745'],
+            borderColor: '#fff',
+            borderWidth: 3,
+            hoverOffset: 10
+        }]
+    };
+
+    // Varsayılan grafik tipi
+    var chartType = 'doughnut';
+
+    var bugStatusChart = new Chart(ctx, {
+        type: chartType,
+        data: chartData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        color: '#333'
+                    }
+                }
+            }
+        }
+    });
+
+    // Grafik tipi değiştirme
+    document.getElementById('chartTypeSelect').addEventListener('change', function () {
+        var selectedType = this.value;
+        bugStatusChart.destroy();
+        bugStatusChart = new Chart(ctx, {
+            type: selectedType,
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            color: '#333'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>

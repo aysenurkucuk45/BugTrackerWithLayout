@@ -1,7 +1,7 @@
 ﻿@model BugTrackerWithLayout.Models.Bug
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Hata Güncelle";
 }
 
 <h2>Hata Güncelle</h2>
@@ -9,113 +9,47 @@
 @using (Html.BeginForm("Edit", "Bug", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
 
-    <div class="form-horizontal">
-        <h4>Bug</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Priority, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Priority, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Status, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ReportedBy, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ReportedBy, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ReportedBy, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.CreatedAt, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.CreatedAt, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.CreatedAt, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <!-- ✅ Kategori Alanı Görsel -->
-        <div class="form-group">
-            <label class="control-label col-md-2">Kategori</label>
-            <div class="col-md-10">
-                <p class="form-control-static">
-                    @(Model.Category != null ? Model.Category.Name : "Kategori Yok")
-                </p>
-            </div>
-        </div>
-
-        <!-- 🔁 Dosya Yükleme Alanı -->
-        <div class="form-group">
-            <label class="control-label col-md-2">Dosya Güncelle</label>
-            <div class="col-md-10">
-                <input type="file" name="file" class="form-control" />
-                @if (!string.IsNullOrEmpty(Model.Attachment))
-                {
-                    <p>Mevcut dosya: <a href="@Url.Content(Model.FilePath)" target="_blank">@Model.Attachment</a></p>
-                }
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Kaydet" class="btn btn-success" />
-            </div>
-        </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Title)
+        @Html.TextBoxFor(model => model.Title, new { @class = "form-control" })
     </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Description)
+        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 3 })
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Priority")
+        @Html.DropDownList("Priority", new SelectList(new[] { "Düşük", "Orta", "Yüksek" }, Model.Priority), new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Status")
+        @Html.DropDownList("Status", new SelectList(new[] { "Açık", "Devam Ediyor", "Çözüldü" }, Model.Status), new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ReportedBy)
+        @Html.TextBoxFor(model => model.ReportedBy, new { @class = "form-control", @readonly = "readonly" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.CreatedAt)
+        @Html.TextBoxFor(model => model.CreatedAt, new { @class = "form-control", @readonly = "readonly" })
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Kategori")
+        @Html.DropDownList("CategoryId", ViewBag.CategoryId as SelectList, "Kategori Seçiniz", new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Dosya Güncelle</label>
+        <input type="file" name="file" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Kaydet</button>
 }
-
-<div>
-    @Html.ActionLink("Geri Dön", "Index", null, new { @class = "btn btn-default" })
-</div>
-<div class="form-group">
-    @Html.Label("Kategori", htmlAttributes: new { @class = "control-label col-md-2" })
-    <div class="col-md-10">
-        @Html.DropDownList("CategoryId", null, "Kategori Seçin", new { @class = "form-control" })
-        @Html.ValidationMessage("CategoryId", "", new { @class = "text-danger" })
-    </div>
-</div>
-<div class="form-group">
-    @Html.LabelFor(model => model.CategoryId,
-                   "Kategori",
-                   htmlAttributes: new { @class = "control-label col-md-2" })
-
-    <div class="col-md-10">
-        @Html.DropDownList("CategoryId",
-                           ViewBag.CategoryId as SelectList,
-                           "Kategori Seçiniz",
-                           new { @class = "form-control" })
-
-        @Html.ValidationMessageFor(model => model.CategoryId, "",
-                                   new { @class = "text-danger" })
-    </div>
-</div>

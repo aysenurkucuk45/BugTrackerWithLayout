@@ -1,32 +1,69 @@
-﻿@{
+﻿@model BugTrackerWithLayout.ViewModels.LoginViewModel
+@{
     ViewBag.Title = "Giriş Yap";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<style>
+    .auth-wrap {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-<h2>Giriş Yap</h2>
+    .auth-card {
+        max-width: 460px;
+        width: 100%;
+    }
 
-@if (ViewBag.Error != null)
-{
-    <div class="alert alert-danger">@ViewBag.Error</div>
-}
+    .bg-grad {
+        background: linear-gradient(135deg,#0d6efd22,#6610f222);
+        border-radius: 1.25rem;
+    }
 
-@*@<p>Giriş yapan: @User.Identity.Name</p>*@
+    .brand {
+        font-weight: 800;
+        letter-spacing: .5px;
+    }
+</style>
 
-<form method="post" class="form-horizontal" style="max-width: 400px;">
-    <div class="form-group">
-        <label for="username">Kullanıcı Adı</label>
-        <input type="text" name="username" class="form-control" required />
+<div class="container auth-wrap">
+    <div class="card shadow-lg border-0 auth-card">
+        <div class="card-body p-4 bg-grad">
+            <h3 class="brand mb-1">BugTracker</h3>
+            <h5 class="text-muted mb-4">Hesabınıza giriş yapın</h5>
+
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.UserOrEmail, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.UserOrEmail, new { @class = "form-control form-control-lg", placeholder = "kullanıcı adı veya e-posta" })
+                    @Html.ValidationMessageFor(m => m.UserOrEmail, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control form-control-lg", placeholder = "parola" })
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input", id = "remember" })
+                        <label class="form-check-label" for="remember">Beni hatırla</label>
+                    </div>
+                    @Html.ActionLink("Şifremi unuttum", "ForgotPassword", "Account", null, new { @class = "small" })
+                </div>
+
+                <button class="btn btn-primary btn-lg w-100" type="submit">Giriş Yap</button>
+
+                <div class="text-center mt-3">
+                    Hesabın yok mu? @Html.ActionLink("Kayıt ol", "Register", "Account", null, new { @class = "small" })
+                </div>
+            }
+        </div>
     </div>
-    <div class="form-group">
-        <label for="password">Şifre</label>
-        <input type="password" name="password" class="form-control" required />
-    </div>
-    <p>
-        <a href="@Url.Action("ForgotPassword", "Account")">Şifremi unuttum</a>
-    </p>
-
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Giriş Yap</button>
-        <a href="/Account/ForgotPassword" class="btn btn-link">Şifremi Unuttum</a>
-    </div>
-</form>
+</div>

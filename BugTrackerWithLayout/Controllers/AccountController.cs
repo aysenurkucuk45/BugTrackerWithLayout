@@ -1,159 +1,172 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
 using BugTrackerWithLayout.Models;
+using BugTrackerWithLayout.Security;
 using BugTrackerWithLayout.ViewModels;
 
-public class AccountController : Controller
+// ViewModel alias'ları (adı çakışmalarını önler)
+using LoginVM = BugTrackerWithLayout.ViewModels.LoginViewModel;
+using RegisterVM = BugTrackerWithLayout.ViewModels.RegisterViewModel;
+
+namespace BugTrackerWithLayout.Controllers
 {
-    // GET: /Account/Login
-    [HttpGet]
-    public ActionResult Login()
+    public class AccountController : Controller
     {
-        return View();
-    }
+        private readonly BugTrackerDbContext db = new BugTrackerDbContext();
 
-    // POST: Giriş kontrolü
-    [HttpPost]
-    public ActionResult Login(string username, string password)
-    {
-        using (var db = new BugTrackerDbContext())
+        // ------ LOGIN ------
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult Login(string returnUrl = null)
         {
-            var user = db.Users.FirstOrDefault(u => u.Username == username && u.Password == password);
-
-            if (user != null)
-            {
-                // Giriş başarılı → oturumu başlat
-                FormsAuthentication.SetAuthCookie(user.Username, false);
-                return RedirectToAction("About", "Home");
-
-                // Rolüne göre yönlendirme yapılabilir
-                
-
-            }
-            else
-            {
-                ViewBag.Error = "Geçersiz kullanıcı adı veya şifre.";
-                return View();
-            }
-        }
-    }
-
-    // GET: /Account/Register
-    public ActionResult Register()
-    {
-        return View();
-    }
-
-    // POST: /Account/Register
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult Register(RegisterViewModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            using (var db = new BugTrackerDbContext())
-            {
-                var existingUser = db.Users.FirstOrDefault(u => u.Username == model.Username);
-                if (existingUser != null)
-                {
-                    ViewBag.Error = "Bu kullanıcı adı zaten mevcut.";
-                    return View();
-                }
-
-                var user = new User
-                {
-                    Username = model.Username,
-                    Email = model.Email,
-                    Password = model.Password,
-                    Role = model.Role
-                };
-                db.Users.Add(user);
-                db.SaveChanges();
-
-                // ✅ Otomatik giriş
-                FormsAuthentication.SetAuthCookie(user.Username, false);
-
-                return RedirectToAction("Index", "Bug");
-            }
+            ViewBag.ReturnUrl = returnUrl;
+            return View(new LoginVM());
         }
 
-        return View(model);
-    }
-
-
-    // HESABIM
-    [Authorize]
-    [Authorize]
-
-    public ActionResult UserProfile()
-    {
-        var username = User.Identity.Name;
-
-        using (var db = new BugTrackerDbContext())
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(LoginVM vm, string returnUrl = null)
         {
-            var user = db.Users.FirstOrDefault(u => u.Username == username);
-            if (user == null)
-                return HttpNotFound();
+            if (!ModelState.IsValid)
+                return View(vm);
 
-            var bugs = db.Bugs
-                         .Where(b => b.ReportedBy == username)
-                         .OrderByDescending(b => b.CreatedAt)
-                         .ToList();
+            // Kullanıcı adı / e-posta için küçük/büyük harf duyarsız arama
+            var user = db.Users.FirstOrDefault(u =>
+                u.UserName.Equals(vm.UserOrEmail, StringComparison.OrdinalIgnoreCase) ||
+                u.Email.Equals(vm.UserOrEmail, StringComparison.OrdinalIgnoreCase));
+
+            if (user == null || !PasswordHelper.Verify(vm.Password, user.PasswordHash))
+            {
+                ModelState.AddModelError("", "Geçersiz kullanıcı adı/e-posta veya parola.");
+                return View(vm);
+            }
+
+            FormsAuthentication.SetAuthCookie(user.UserName, vm.RememberMe);
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
+            // Daha doğal yönlendirme
+            return RedirectToAction("Index", "Home");
+        }
+
+        // ------ REGISTER ------
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult Register()
+        {
+            ViewBag.Avatars = new[] { "Tweety", "Bugs Bunny", "Tom", "Jerry" };
+            return View(new RegisterVM { Avatar = "Tweety" });
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Register(RegisterVM model)
+        {
+            ViewBag.Avatars = new[] { "Tweety", "Bugs Bunny", "Tom", "Jerry" };
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            if (db.Users.Any(u => u.UserName.Equals(model.UserName, StringComparison.OrdinalIgnoreCase)))
+            {
+                ModelState.AddModelError("", "Bu kullanıcı adı zaten mevcut.");
+                return View(model);
+            }
+
+            if (db.Users.Any(u => u.Email.Equals(model.Email, StringComparison.OrdinalIgnoreCase)))
+            {
+                ModelState.AddModelError("", "Bu e-posta zaten kayıtlı.");
+                return View(model);
+            }
+
+            // Avatar doğrulama
+            var allowedAvatars = new[] { "Tweety", "Bugs Bunny", "Tom", "Jerry" };
+            var avatar = allowedAvatars.Contains(model.Avatar) ? model.Avatar : "Tweety";
+
+            var user = new User
+            {
+                UserName = model.UserName.Trim(),
+                Email = model.Email.Trim(),
+                DisplayName = string.IsNullOrWhiteSpace(model.DisplayName)
+                                ? model.UserName
+                                : model.DisplayName.Trim(),
+                Avatar = avatar,
+                Role = "User",
+                PasswordHash = PasswordHelper.HashPassword(model.Password)
+            };
+
+            db.Users.Add(user);
+            db.SaveChanges();
+
+            FormsAuthentication.SetAuthCookie(user.UserName, false);
+            return RedirectToAction("Index", "Home");
+        }
+
+        // ------ PROFILE ------
+        [Authorize]
+        [HttpGet]
+        public ActionResult UserProfile()
+        {
+            var username = User.Identity.Name;
+
+            var user = db.Users.FirstOrDefault(u => u.UserName == username);
+            if (user == null) return HttpNotFound();
+
+            var userBugs = db.Bugs
+                .Where(b => b.ReportedBy == username)
+                .ToList();
 
             var model = new UserProfileViewModel
             {
-                Username = user.Username,
+                Username = user.UserName,
                 Email = user.Email,
-                Role = user.Role,
-                Bugs = bugs
+                ProfileImagePath = user.Avatar, // avatar adı; view tarafında uygun görsel eşle
+                Bugs = userBugs.OrderByDescending(b => b.CreatedAt).ToList(),
+                TotalBugs = userBugs.Count,
+                OpenBugCount = userBugs.Count(b => b.Status == "Açık"),
+                InProgressBugCount = userBugs.Count(b => b.Status == "Devam Ediyor"),
+                ResolvedBugCount = userBugs.Count(b => b.Status == "Çözüldü"),
+                CommentCount = userBugs.Sum(b => b.Comments != null ? b.Comments.Count : 0),
+                SolutionCount = userBugs.Sum(b => b.Solutions != null ? b.Solutions.Count : 0)
             };
 
             return View(model);
         }
-    }
 
+        // ------ FORGOT PASSWORD (örnek) ------
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult ForgotPassword() => View();
 
-
-
-
-
-    // TEMA
-    public ActionResult SetTheme(string theme)
-    {
-        if (theme == "dark" || theme == "light")
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ForgotPassword(ForgotPasswordViewModel model)
         {
-            Session["Theme"] = theme;
-        }
+            if (!ModelState.IsValid) return View(model);
 
-        return Redirect(Request.UrlReferrer?.ToString() ?? "/");
-    }
-
-    // Şifremi Unuttum - GET
-    public ActionResult ForgotPassword()
-    {
-        return View();
-    }
-
-    // Şifremi Unuttum - POST
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult ForgotPassword(ForgotPasswordViewModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            TempData["Success"] = "Parola sıfırlama bağlantısı gönderildi (örnek).";
+            TempData["Success"] = "Parola sıfırlama bağlantısı (örnek) gönderildi.";
             return RedirectToAction("Login");
         }
 
-        return View(model);
-    }
+        // ------ LOGOUT ------
+        [Authorize]
+        public ActionResult Logout()
+        {
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Login");
+        }
 
-    // ÇIKIŞ
-    public ActionResult Logout()
-    {
-        FormsAuthentication.SignOut();
-        return RedirectToAction("Login");
+        // ------ Dispose ------
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

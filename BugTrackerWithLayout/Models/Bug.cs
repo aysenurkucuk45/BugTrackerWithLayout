@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace BugTrackerWithLayout.Models
 {
@@ -12,19 +14,24 @@ namespace BugTrackerWithLayout.Models
 
         public string Description { get; set; }
 
-        public string Priority { get; set; } // Düşük, Orta, Yüksek 
+        public string Priority { get; set; }
 
-        public string Status { get; set; } = "Açık"; // Açık, Devam ediyor, Tamamlandı
+        public string Status { get; set; }
+
+        public DateTime CreatedAt { get; set; }
 
         public string ReportedBy { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public string Attachment { get; set; }
-        public string FilePath { get; set; }
-        public string Solution { get; set; }
-        public int? CategoryId { get; set; } // Nullable yaptık
+        public int CategoryId { get; set; }
+
         public virtual Category Category { get; set; }
+        public string Attachment { get; set; }  // dosya adı gibi düşün
+        public string FilePath { get; set; }    // tam dosya yolu (opsiyonel)
+        public string Solution { get; set; }    // çözüm içeriği (eğer ayrı tablo yapmadıysan)
+        public virtual ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<Solution> Solutions { get; set; }
 
 
     }
+
 }

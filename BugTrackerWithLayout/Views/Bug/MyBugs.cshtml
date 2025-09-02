@@ -30,7 +30,7 @@
                         <a href="@Url.Action("Details", "Bug", new { id = bug.Id })" class="btn btn-info btn-sm">Detay</a>
                         <a href="@Url.Action("Edit", "Bug", new { id = bug.Id })" class="btn btn-warning btn-sm">Düzenle</a>
                         <a href="@Url.Action("Delete", "Bug", new { id = bug.Id })" class="btn btn-danger btn-sm">Sil</a>
-                        <a href="@Url.Action("AddSolution", "Bug", new { id = bug.Id })" class="btn btn-success btn-sm">Çözüm Ekle</a>
+                        <a href="@Url.Action("AddSolution", "Bug", new { id = bug.Id , solution = bug.Title,status = "Çözüldü"})" class="btn btn-success btn-sm">Çözüm Ekle</a>
                     </td>
                 </tr>
             }
