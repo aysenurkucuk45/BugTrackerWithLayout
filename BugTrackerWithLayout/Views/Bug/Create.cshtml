@@ -1,63 +1,77 @@
 ﻿@model BugTrackerWithLayout.Models.Bug
-
 @{
     ViewBag.Title = "Yeni Hata Ekle";
 }
 
-<h2>Yeni Hata Ekle</h2>
+<div class="container mt-4">
+    <!-- Başlık ve Geri Dön -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="mb-0 fw-bold text-primary">Yeni Hata Ekle</h2>
+        <a href="@Url.Action("Index","Bug")" class="btn btn-sm btn-success fw-bold">
+            ← Geri Dön
+        </a>
+    </div>
 
-@using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 
-    <div class="form-horizontal">
-        <div class="form-group">
-            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
-            </div>
-        </div>
+    <div class="card shadow-sm rounded-3 border-0">
+        <div class="card-body p-4">
+            @using (Html.BeginForm("Create", "Bug", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
-            </div>
-        </div>
+                <div class="row g-3">
+                    <!-- Başlık -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-dark">Başlık <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.Title, new { @class = "form-control border-primary shadow-sm", placeholder = "Örn: Koyu temada buton metni görünmüyor" })
+                        @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger small" })
+                    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Priority, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Priority, ViewBag.PriorityList as SelectList, "Öncelik Seçiniz", new { @class = "form-control" })
-            </div>
-        </div>
+                    <!-- Açıklama -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-dark">Açıklama <span class="text-danger">*</span></label>
+                        @Html.TextAreaFor(m => m.Description, 5, 0, new { @class = "form-control border-info shadow-sm", placeholder = "Adımlar, beklenen/gerçekleşen sonuçlar ve varsa hata mesajı..." })
+                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger small" })
+                    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Status, ViewBag.StatusList as SelectList, "Durum Seçiniz", new { @class = "form-control" })
-            </div>
-        </div>
+                    <!-- Öncelik -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Öncelik</label>
+                        @Html.DropDownListFor(m => m.Priority, ViewBag.PriorityList as SelectList, "Öncelik Seçiniz", new { @class = "form-select border-warning shadow-sm" })
+                    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.CategoryId, "Kategori", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.CategoryId, ViewBag.CategoryId as SelectList, "Kategori Seçiniz", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
-            </div>
-        </div>
+                    <!-- Durum -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Durum</label>
+                        @Html.DropDownListFor(m => m.Status, ViewBag.StatusList as SelectList, "Durum Seçiniz", new { @class = "form-select border-success shadow-sm" })
+                    </div>
 
-        <div class="form-group">
-            @Html.Label("Dosya Ekle", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <input type="file" name="file" class="form-control" />
-            </div>
-        </div>
+                    <!-- Kategori -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Kategori <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.CategoryId, ViewBag.CategoryId as SelectList, "Kategori Seçiniz", new { @class = "form-select border-secondary shadow-sm" })
+                        @Html.ValidationMessageFor(m => m.CategoryId, "", new { @class = "text-danger small" })
+                    </div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Kaydet" class="btn btn-primary" />
-            </div>
+                    <!-- Dosya -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Dosya / Ekran Görüntüsü</label>
+                        <input type="file" name="file" class="form-control border-info shadow-sm" />
+                        <div class="form-text text-muted">PNG, JPG veya PDF • maks. 5MB</div>
+                    </div>
+
+                    <!-- Butonlar -->
+                    <div class="col-12 d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary fw-bold px-4 shadow">
+                            ✅ Kaydet
+                        </button>
+                        <a href="@Url.Action("Index","Bug")" class="btn btn-danger fw-bold px-4 shadow">
+                            ❌ İptal
+                        </a>
+                    </div>
+                </div>
+            }
         </div>
     </div>
-}
+</div>

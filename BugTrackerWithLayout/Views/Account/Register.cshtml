@@ -1,55 +1,82 @@
-﻿@model BugTrackerWithLayout.Models.RegisterViewModel
+﻿@model BugTrackerWithLayout.ViewModels.RegisterViewModel
 
 @{
     ViewBag.Title = "Kayıt Ol";
-    Layout = "~/Views/Shared/_Layout.cshtml"; // Eğer layout kullanıyorsan bunu ekle
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var avatars = ViewBag.Avatars as string[];
 }
 
-<h2>Kayıt Ol</h2>
+<style>
+    .auth-wrap {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-{
-    @Html.AntiForgeryToken()
+    .auth-card {
+        max-width: 600px;
+        width: 100%;
+    }
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.Username, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+    .bg-grad {
+        background: linear-gradient(135deg,#20c99722,#6f42c122);
+        border-radius: 1.25rem;
+    }
+</style>
+
+<div class="container auth-wrap">
+    <div class="card shadow-lg border-0 auth-card">
+        <div class="card-body p-4 bg-grad">
+            <h3 class="brand mb-1">BugTracker</h3>
+            <h5 class="text-muted mb-4">Hızlıca aramıza katıl</h5>
+
+            @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.UserName, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = "kullanıcı adı" })
+                    @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "ornek@eposta.com" })
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "en az 6 karakter" })
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.ConfirmPassword, new { @class = "form-label" })
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = "parola tekrar" })
+                    @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.DisplayName, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.DisplayName, new { @class = "form-control", placeholder = "Görünen ad (opsiyonel)" })
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Avatar, new { @class = "form-label" })
+                    @Html.DropDownListFor(m => m.Avatar, new SelectList(avatars), "Seçiniz", new { @class = "form-select" })
+                    @Html.ValidationMessageFor(m => m.Avatar, "", new { @class = "text-danger" })
+                </div>
+
+                <button class="btn btn-success w-100" type="submit">Kayıt Ol</button>
+            }
+
+            <div class="text-center mt-3">
+                Zaten hesabın var mı? @Html.ActionLink("Giriş Yap", "Login", "Account", null, new { @class = "small" })
+            </div>
         </div>
     </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Email, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Password, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Role, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(m => m.Role, new SelectList(new[] { "Admin", "Kullanıcı" }), "Seçiniz", new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Role, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-primary">Kayıt Ol</button>
-        </div>
-    </div>
-}
-
-<div>
-    Zaten hesabınız var mı? <a href="/Account/Login">Giriş Yap</a>
 </div>

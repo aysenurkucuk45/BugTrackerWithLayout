@@ -1,0 +1,101 @@
+﻿@model BugTrackerWithLayout.ViewModels.UserProfileViewModel
+
+@{
+    ViewBag.Title = "Profilim";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Sol kısım: Profil fotoğrafı ve temel bilgiler -->
+        <div class="col-md-3 text-center">
+            <img src="@Url.Content(Model.ProfileImagePath ?? "~/Content/default-profile.png")"
+                 class="img-thumbnail rounded-circle mb-3"
+                 style="width: 150px; height: 150px;" />
+            <h4>@Model.Username</h4>
+            <p>@Model.Email</p>
+            <span class="badge bg-secondary">@Model.Role</span>
+
+            <!-- ✅ TempData mesajları -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success mt-2">@TempData["Success"]</div>
+            }
+            else if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger mt-2">@TempData["Error"]</div>
+            }
+
+            <!-- 👇 Profil fotoğrafı seçme formu -->
+            <form method="post" action="@Url.Action("UpdateProfileImage", "User")" class="mt-3">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    <label for="selectedImage">Profil Karakterini Seç:</label>
+                    <select name="selectedImage" class="form-control" required>
+                        <option value="">-- Seçin --</option>
+                        <option value="Tweety" @(Model.ProfileImagePath?.Contains("Tweety") == true ? "selected" : "")>Tweety</option>
+                        <option value="Tom" @(Model.ProfileImagePath?.Contains("Tom") == true ? "selected" : "")>Tom</option>
+                        <option value="Jerry" @(Model.ProfileImagePath?.Contains("Jerry") == true ? "selected" : "")>Jerry</option>
+                        <option value="BugsBunny" @(Model.ProfileImagePath?.Contains("BugsBunny") == true ? "selected" : "")>Bugs Bunny</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm mt-2">Güncelle</button>
+            </form>
+        </div>
+
+        <!-- Sağ kısım: İstatistik kartları -->
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card text-white bg-primary mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Toplam Hata</h5>
+                            <p class="card-text fs-3">@Model.TotalBugs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-warning mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Devam Ediyor</h5>
+                            <p class="card-text fs-3">@Model.InProgressBugCount</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-success mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Çözülen</h5>
+                            <p class="card-text fs-3">@Model.ResolvedBugCount</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-danger mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Açık</h5>
+                            <p class="card-text fs-3">@Model.OpenBugCount</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-info mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Yorum Sayısı</h5>
+                            <p class="card-text fs-3">@Model.CommentCount</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-dark mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Çözüm Sayısı</h5>
+                            <p class="card-text fs-3">@Model.SolutionCount</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
