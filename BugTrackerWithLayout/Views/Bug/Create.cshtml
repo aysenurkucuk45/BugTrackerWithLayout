@@ -2,62 +2,58 @@
 
 @{
     ViewBag.Title = "Yeni Hata Ekle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Yeni Hata Ekle</h2>
+<h2 class="mb-3">Yeni Hata Ekle</h2>
 
-@using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    @Html.AntiForgeryToken()
+<div class="d-flex justify-content-center">
+    <div class="card shadow-sm border-0 p-4" style="max-width: 680px; width: 100%; border-radius: 16px;">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3 small" })
 
-    <div class="form-horizontal">
-        <div class="form-group">
-            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Title, new { @class = "form-label fw-semibold" })
+                @Html.EditorFor(m => m.Title, new { htmlAttributes = new { @class = "form-control", placeholder = "Hata için kısa ve açıklayıcı bir başlık" } })
             </div>
-        </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Description, new { @class = "form-label fw-semibold" })
+                @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = "5", placeholder = "Beklenen davranış / mevcut durum / yeniden üretim adımları..." })
             </div>
-        </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Priority, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Priority, ViewBag.PriorityList as SelectList, "Öncelik Seçiniz", new { @class = "form-control" })
+            <div class="row g-3">
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.Priority, new { @class = "form-label fw-semibold" })
+                    @Html.DropDownListFor(m => m.Priority, ViewBag.PriorityList as SelectList, "Öncelik Seçiniz", new { @class = "form-select" })
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.Status, new { @class = "form-label fw-semibold" })
+                    @Html.DropDownListFor(m => m.Status, ViewBag.StatusList as SelectList, "Durum Seçiniz", new { @class = "form-select" })
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.CategoryId, "Kategori", new { @class = "form-label fw-semibold" })
+                    @Html.DropDownListFor(m => m.CategoryId, ViewBag.CategoryId as SelectList, "Kategori Seçiniz", new { @class = "form-select" })
+                    @Html.ValidationMessageFor(m => m.CategoryId, "", new { @class = "text-danger small" })
+                </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Status, ViewBag.StatusList as SelectList, "Durum Seçiniz", new { @class = "form-control" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.CategoryId, "Kategori", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.CategoryId, ViewBag.CategoryId as SelectList, "Kategori Seçiniz", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.Label("Dosya Ekle", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="mt-3">
+                @Html.Label("Dosya Ekle", new { @class = "form-label fw-semibold" })
                 <input type="file" name="file" class="form-control" />
+                <small class="text-muted">Ekran görüntüsü, log veya ilgili belgeyi ekleyebilirsiniz (opsiyonel).</small>
             </div>
-        </div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Kaydet" class="btn btn-primary" />
+            <div class="mt-4 d-flex gap-2">
+                <input type="submit" value="Kaydet" class="btn btn-primary px-4" />
+                <a href="@Url.Action("Index", "Bug")"
+                   class="btn btn-outline-secondary fw-semibold"
+                   style="color:#212529 !important; -webkit-text-fill-color:#212529 !important;">
+                    Vazgeç
+                </a>
             </div>
-        </div>
+        }
     </div>
-}
+</div>

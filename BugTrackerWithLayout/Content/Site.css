@@ -187,3 +187,105 @@ body.dark h6 {
     border-color: #4cae4c;
     color: #fff !important;
 }
+/* ===== Layout genel ===== */
+.page-container {
+    margin-top: 90px; /* fixed-top navbar boşluğu */
+    min-height: calc(100vh - 140px);
+}
+
+/* ===== Tema: light/dark ===== */
+body.light {
+    background: #f8f9fb;
+    color: #212529;
+}
+
+body.dark {
+    background: #0f1115;
+    color: #e6e6e6;
+}
+
+    body.dark .navbar,
+    body.dark .dropdown-menu {
+        background: #151822 !important;
+        color: #e6e6e6;
+    }
+
+    body.dark .dropdown-item {
+        color: #e6e6e6;
+    }
+
+        body.dark .dropdown-item:hover {
+            background: #1d2130;
+        }
+
+    body.dark .card {
+        background: #151822;
+        color: #e6e6e6;
+        border-color: #1f2433;
+    }
+
+    body.dark .btn-outline-secondary {
+        border-color: #3a3f55;
+        color: #e6e6e6;
+    }
+
+/* ===== Auth sayfaları (Login/Register/Forgot) ===== */
+.auth-bg {
+    /* yumuşak degrade arka plan */
+    background: linear-gradient(135deg, #dff1ff 0%, #f3e8ff 100%);
+}
+
+body.dark.auth-bg {
+    background: linear-gradient(135deg, #0b0e14 0%, #141a24 100%);
+}
+
+/* Kartları parlat */
+.auth-card {
+    max-width: 460px;
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 10px 35px rgba(0,0,0,.08);
+    padding: 28px;
+    backdrop-filter: blur(2px);
+}
+
+.auth-title {
+    font-weight: 700;
+    letter-spacing: .2px;
+    margin-bottom: 16px;
+}
+
+.auth-subtitle {
+    color: #6c757d;
+    margin-bottom: 18px;
+}
+
+.auth-link {
+    text-decoration: none;
+}
+
+    .auth-link:hover {
+        text-decoration: underline;
+    }
+
+/* Form elemanları */
+.form-control:focus {
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.25);
+    border-color: #86b7fe;
+}
+
+.btn-lg {
+    padding: .75rem 1rem;
+    border-radius: 12px;
+}
+
+/* Navbar ufak dokunuşlar */
+.navbar .navbar-brand {
+    letter-spacing: .2px;
+}
+#vazgecBtn {
+    color: #212529 !important; /* Bootstrap’in varsayılan siyah tonu */
+}
+.btn.btn-outline-secondary {
+    color: #212529 !important;
+}

@@ -1,55 +1,66 @@
-﻿@model BugTrackerWithLayout.Models.RegisterViewModel
+﻿@model BugTrackerWithLayout.ViewModels.RegisterViewModel
 
 @{
     ViewBag.Title = "Kayıt Ol";
-    Layout = "~/Views/Shared/_Layout.cshtml"; // Eğer layout kullanıyorsan bunu ekle
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Kayıt Ol</h2>
-
-@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-{
-    @Html.AntiForgeryToken()
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Username, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+<div class="d-flex align-items-center justify-content-center min-vh-100 auth-bg">
+    <div class="card shadow-lg border-0 p-4" style="max-width: 420px; width:100%; border-radius: 20px;">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold text-success" style="font-size: 2rem;">Kayıt Ol</h1>
+            <p class="text-muted" style="font-size: .95rem;">Hemen aramıza katılın </p>
         </div>
-    </div>
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.Email, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-        </div>
-    </div>
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "mt-2" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3 small" })
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.Password, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-        </div>
-    </div>
+            <div class="form-floating mb-3">
+                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control rounded-pill", placeholder = "Kullanıcı Adı", autocomplete = "username" })
+                <label>Kullanıcı Adı</label>
+                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger small" })
+            </div>
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.Role, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(m => m.Role, new SelectList(new[] { "Admin", "Kullanıcı" }), "Seçiniz", new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Role, "", new { @class = "text-danger" })
-        </div>
-    </div>
+            <div class="form-floating mb-3">
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control rounded-pill", type = "email", placeholder = "E-posta", autocomplete = "email" })
+                <label>E-posta</label>
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+            </div>
 
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-primary">Kayıt Ol</button>
-        </div>
-    </div>
-}
+            <div class="form-floating mb-3">
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control rounded-pill", placeholder = "Şifre", autocomplete = "new-password" })
+                <label>Şifre</label>
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger small" })
+            </div>
 
-<div>
-    Zaten hesabınız var mı? <a href="/Account/Login">Giriş Yap</a>
+            <div class="form-floating mb-3">
+                @Html.TextBoxFor(m => m.DisplayName, new { @class = "form-control rounded-pill", placeholder = "Profil Adı" })
+                <label>Profil Adı</label>
+                @Html.ValidationMessageFor(m => m.DisplayName, "", new { @class = "text-danger small" })
+                <small class="text-muted">Boş bırakırsanız kullanıcı adınız görünecek.</small>
+            </div>
+
+            <div class="mb-3">
+                @Html.Label("Avatar", new { @class = "form-label fw-semibold" })
+                @Html.DropDownListFor(
+                    m => m.Avatar,
+                    new SelectList((IEnumerable<string>)ViewBag.Avatars),
+                    "Seçiniz",
+                    new { @class = "form-select rounded-pill" }
+                )
+                <small class="text-muted d-block mt-1">Tweety, Bugs Bunny, Tom, Jerry</small>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 py-2 rounded-pill fw-semibold shadow-sm">
+                ✔ Kayıt Ol
+            </button>
+
+            <div class="text-center mt-3">
+                <small>Zaten hesabınız var mı?</small>
+                @Html.ActionLink("Giriş Yap", "Login", "Account", null, new { @class = "ms-1 fw-semibold text-decoration-none text-primary" })
+            </div>
+        }
+    </div>
 </div>

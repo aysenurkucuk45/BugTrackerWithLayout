@@ -2,13 +2,37 @@
 @using PagedList.Mvc
 @{
     ViewBag.Title = "Hata Takip Listesi";
+    var currentPageSize = ViewBag.CurrentPageSize ?? 5; // Controller dolduruyor
 }
 
-<h2>Bütün Hatalar</h2>
+<h2 class="mb-3">Bütün Hatalar</h2>
 
-<p>
-    <a href="@Url.Action("Create")" class="btn btn-success">Yeni Hata Ekle</a>
-</p>
+<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+    <div class="d-flex gap-2 align-items-center">
+        <a href="@Url.Action("Create")" class="btn btn-success">Yeni Hata Ekle</a>
+
+        <!-- Kaçarlı gösterilsin -->
+        <form method="get" action="@Url.Action("Index")" class="d-inline-block ms-2">
+            <input type="hidden" name="page" value="1" />
+            <label class="me-1">Görünüm:</label>
+            <select name="pageSize" class="form-select d-inline-block" style="width:auto;" onchange="this.form.submit()">
+                @{
+                    int[] sizes = new[] { 5, 10, 20, 50 };
+                    foreach (var s in sizes)
+                    {
+                        <option value="@s" @(s == (int)currentPageSize ? "selected" : "")>@s</option>
+                    }
+                }
+            </select>
+        </form>
+    </div>
+
+    <!-- Export -->
+    <div class="btn-group">
+        <a class="btn btn-outline-primary export-btn" href="@Url.Action("ExportExcel", "Bug")"><span>Excel (CSV)</span></a>
+        <a class="btn btn-outline-danger export-btn" href="@Url.Action("ExportPdf", "Bug")"><span>PDF</span></a>
+    </div>
+</div>
 
 <table class="table table-bordered table-hover">
     <thead>
@@ -19,7 +43,7 @@
             <th>Durum</th>
             <th>Bildiren</th>
             <th>Tarih</th>
-            <th>İşlemler</th>
+            <th class="text-center">İşlemler</th>
             <th>Kategori</th>
         </tr>
     </thead>
@@ -64,11 +88,40 @@
                 </td>
                 <td>@item.ReportedBy</td>
                 <td>@item.CreatedAt.ToShortDateString()</td>
-                <td>
-                    <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-primary btn-sm">Düzenle</a>
-                    <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-danger btn-sm">Sil</a>
-                    <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-success btn-sm">Çözüm Ekle</a>
+
+                <!-- İşlemler dropdown -->
+                <td class="text-center text-nowrap">
+                    <div class="btn-group">
+                        <button type="button"
+                                class="btn btn-outline-secondary btn-sm actions-btn dropdown-toggle"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>İşlemler</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item"
+                                   href="@Url.Action("Edit", new { id = item.Id })">
+                                    Düzenle
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   href="@Url.Action("Details", new { id = item.Id })">
+                                    Çözüm Ekle
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <a class="dropdown-item text-danger"
+                                   href="@Url.Action("Delete", new { id = item.Id })"
+                                   onclick="return confirm('Bu hatayı silmek istediğinize emin misiniz?');">
+                                    Sil
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </td>
+
                 <td>
                     @if (item.Category != null)
                     {
@@ -79,8 +132,6 @@
                         <span class="text-muted fst-italic">Kategori Yok</span>
                     }
                 </td>
-
-
             </tr>
         }
     </tbody>
@@ -88,21 +139,19 @@
 
 <!-- Sayfalama -->
 <div class="d-flex justify-content-center mt-4">
-
-    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
-    new PagedListRenderOptions
-    {
-        Display = PagedListDisplayMode.IfNeeded,
-        DisplayPageCountAndCurrentLocation = false,
-        MaximumPageNumbersToDisplay = 5,
-
-        // Bu satırlarla kenar butonlarını kaldırıyoruz
-        DisplayLinkToFirstPage = PagedListDisplayMode.Never,
-        DisplayLinkToLastPage = PagedListDisplayMode.Never,
-        DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
-        DisplayLinkToNextPage = PagedListDisplayMode.Never
-    })
-
+    @Html.PagedListPager(
+        Model,
+        page => Url.Action("Index", new { page, pageSize = currentPageSize }),
+        new PagedListRenderOptions
+        {
+            Display = PagedListDisplayMode.IfNeeded,
+            DisplayPageCountAndCurrentLocation = false,
+            MaximumPageNumbersToDisplay = 5,
+            DisplayLinkToFirstPage = PagedListDisplayMode.Never,
+            DisplayLinkToLastPage = PagedListDisplayMode.Never,
+            DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+            DisplayLinkToNextPage = PagedListDisplayMode.Never
+        })
 </div>
 
 <style>
@@ -132,5 +181,38 @@
         .pagination > li > a:hover {
             background-color: #e2e6ea;
         }
-</style>
 
+    /* İşlemler sütunu tek satır kalsın */
+    td.text-nowrap {
+        white-space: nowrap;
+    }
+
+    /* --- Görünmeyen buton metinlerini garanti et --- */
+    .export-btn, .actions-btn {
+        font-size: .9rem !important;
+        font-weight: 600;
+        letter-spacing: .1px;
+    }
+
+    .btn-outline-primary.export-btn {
+        color: #0d6efd !important;
+        border-color: #0d6efd !important;
+    }
+
+    .btn-outline-danger.export-btn {
+        color: #dc3545 !important;
+        border-color: #dc3545 !important;
+    }
+
+    .actions-btn {
+        color: #6c757d !important;
+        border-color: #6c757d !important;
+        min-width: 110px;
+    }
+        /* Bazı temalarda ikon-only kuralı olabiliyor; yazıyı zorla göster */
+        .actions-btn span, .export-btn span {
+            display: inline !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+</style>

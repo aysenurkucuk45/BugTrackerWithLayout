@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using Org.BouncyCastle.Tsp;
 using System.Data.Entity;
 
 namespace BugTrackerWithLayout.Models
@@ -9,7 +9,10 @@ namespace BugTrackerWithLayout.Models
 
         public DbSet<Bug> Bugs { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
-        public System.Data.Entity.DbSet<BugTrackerWithLayout.Models.Category> Categories { get; set; }
+        // YENİ EKLENDİ:
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Solution> Solutions { get; set; }
     }
 }

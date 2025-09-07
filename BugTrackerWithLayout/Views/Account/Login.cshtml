@@ -1,32 +1,50 @@
-﻿@{
+﻿@model BugTrackerWithLayout.ViewModels.LoginViewModel
+
+@{
     ViewBag.Title = "Giriş Yap";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Giriş Yap</h2>
+<div class="d-flex align-items-center justify-content-center min-vh-100 auth-bg">
+    <div class="card shadow-lg border-0 p-4" style="max-width: 400px; width:100%; border-radius: 20px;">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold text-primary" style="font-size: 2rem;"> Giriş Yap</h1>
+            <p class="text-muted" style="font-size: .95rem;">Hesabınıza giriş yapın ve devam edin</p>
+        </div>
 
-@if (ViewBag.Error != null)
-{
-    <div class="alert alert-danger">@ViewBag.Error</div>
-}
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "mt-2" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3 small" })
 
-@*@<p>Giriş yapan: @User.Identity.Name</p>*@
+            <div class="form-floating mb-3">
+                @Html.TextBoxFor(m => m.UserOrEmail, new { @class = "form-control rounded-pill", placeholder = "Kullanıcı adı veya e-posta", autocomplete = "username email" })
+                <label>Kullanıcı Adı veya E-posta</label>
+                @Html.ValidationMessageFor(m => m.UserOrEmail, "", new { @class = "text-danger small" })
+            </div>
 
-<form method="post" class="form-horizontal" style="max-width: 400px;">
-    <div class="form-group">
-        <label for="username">Kullanıcı Adı</label>
-        <input type="text" name="username" class="form-control" required />
+            <div class="form-floating mb-3">
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control rounded-pill", placeholder = "Şifre", autocomplete = "current-password" })
+                <label>Şifre</label>
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger small" })
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input", id = "rememberMe" })
+                    <label class="form-check-label" for="rememberMe">Beni hatırla</label>
+                </div>
+                @Html.ActionLink("Şifremi Unuttum", "ForgotPassword", "Account", null, new { @class = "small text-decoration-none text-muted" })
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill fw-semibold shadow-sm mb-2">
+                ✔ Giriş Yap
+            </button>
+
+            <div class="text-center mt-2">
+                <small>Hesabınız yok mu?</small>
+                @Html.ActionLink("Kayıt Olun", "Register", "Account", null, new { @class = "ms-1 fw-semibold text-decoration-none text-success" })
+            </div>
+        }
     </div>
-    <div class="form-group">
-        <label for="password">Şifre</label>
-        <input type="password" name="password" class="form-control" required />
-    </div>
-    <p>
-        <a href="@Url.Action("ForgotPassword", "Account")">Şifremi unuttum</a>
-    </p>
-
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Giriş Yap</button>
-        <a href="/Account/ForgotPassword" class="btn btn-link">Şifremi Unuttum</a>
-    </div>
-</form>
+</div>

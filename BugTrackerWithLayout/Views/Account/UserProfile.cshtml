@@ -1,16 +1,265 @@
 ﻿@model BugTrackerWithLayout.ViewModels.UserProfileViewModel
-
 @{
     ViewBag.Title = "Hesabım";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var activeAvatar = string.IsNullOrEmpty(Model.Avatar) ? "Tom" : Model.Avatar;
+    string circleSrc = activeAvatar == "Jerry"
+        ? Url.Content("~/Content/Image/Jerry.png")
+        : Url.Content("~/Content/Image/tom.png");
 }
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Kullanıcı Bilgileri</h3>
-    </div>
-    <div class="panel-body">
-        <p><strong>Kullanıcı Adı:</strong> @Model.Username</p>
-        <p><strong>E-posta:</strong> @Model.Email</p>
-        <p><strong>Rol:</strong> @Model.Role</p>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center p-4">
+                <!-- Yuvarlak profil görseli -->
+                <img src="@circleSrc"
+                     alt="Profil"
+                     class="img-fluid rounded-circle mb-3 border"
+                     style="width:130px;height:130px;object-fit:cover;"
+                     onerror="this.onerror=null; this.src='@(activeAvatar=="Jerry"
+               ? "https://upload.wikimedia.org/wikipedia/en/2/2f/Jerry_Mouse.png"
+               : "https://upload.wikimedia.org/wikipedia/en/6/6f/Tom_Tom_and_Jerry.png")';" />
+
+                <h4 class="fw-bold">@Model.Username</h4>
+                <p class="text-muted mb-1">@Model.Email</p>
+                <span class="badge bg-primary">@Model.Role</span>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success mt-3 py-2">@TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger mt-3 py-2">@TempData["Error"]</div>
+                }
+
+                <hr class="my-4" />
+                <h6 class="fw-bold mb-3">Profil fotoğrafını değiştir</h6>
+
+                @using (Html.BeginForm("UpdateProfileImage", "User", FormMethod.Post, new { @class = "text-start" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <style>
+                        .avatar-option {
+                            cursor: pointer;
+                            border: 2px solid #e9ecef;
+                            border-radius: 12px;
+                            padding: 8px;
+                            transition: box-shadow .15s,border-color .15s
+                        }
+
+                            .avatar-option:hover {
+                                box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,.08)
+                            }
+
+                            .avatar-option input {
+                                display: none
+                            }
+
+                            .avatar-option.selected {
+                                border-color: #0d6efd;
+                                box-shadow: 0 0 0 .25rem rgba(13,110,253,.15)
+                            }
+
+                        .avatar-img {
+                            width: 64px;
+                            height: 64px;
+                            border-radius: 50%;
+                            object-fit: cover
+                        }
+                    </style>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="w-100 avatar-option @(activeAvatar=="Tom" ? "selected" : "")">
+                                <input type="radio" name="selectedImage" value="Tom" @(activeAvatar == "Tom" ? "checked" : "") />
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="@Url.Content("~/Content/Image/tom.png")" class="avatar-img" alt="Tom" />
+                                    <div>
+                                        <div class="fw-semibold">Tom</div>
+                                        <small class="text-muted">Klasik kedi</small>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <label class="w-100 avatar-option @(activeAvatar=="Jerry" ? "selected" : "")">
+                                <input type="radio" name="selectedImage" value="Jerry" @(activeAvatar == "Jerry" ? "checked" : "") />
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="@Url.Content("~/Content/Image/Jerry.png")" class="avatar-img" alt="Jerry" />
+                                    <div>
+                                        <div class="fw-semibold">Jerry</div>
+                                        <small class="text-muted">Akıllı fare</small>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Kaydet: yazı siyah ve kalın -->
+                    <button type="submit" class="btn btn-outline-primary w-100"
+                            style="color:#212529 !important; font-weight:700 !important;">
+                        Kaydet
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="row text-center mb-3">
+                <div class="col-md-3 mb-2">
+                    <div class="card p-3 shadow-sm">
+                        <h6 class="fw-bold">Toplam</h6><p class="h4 text-primary">@Model.TotalBugs</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card p-3 shadow-sm">
+                        <h6 class="fw-bold">Açık</h6><p class="h4 text-danger">@Model.OpenBugCount</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card p-3 shadow-sm">
+                        <h6 class="fw-bold">Devam</h6><p class="h4 text-warning">@Model.InProgressBugCount</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card p-3 shadow-sm">
+                        <h6 class="fw-bold">Çözüldü</h6><p class="h4 text-success">@Model.ResolvedBugCount</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-3 shadow-sm">
+                <h5 class="fw-bold mb-3">Hata Durum Dağılımı</h5>
+                <canvas id="bugChart" height="120"></canvas>
+            </div>
+        </div>
     </div>
 </div>
+
+@section scripts{
+    <script>
+      // hepsi tek blokta
+
+      // --------- Avatar kartı (Tom/Jerry) seçimi ---------
+      function initAvatarPicker() {
+        var options = document.querySelectorAll('.avatar-option input');
+        if (!options.length) return;
+
+        // Sayfa açılışında 'selected' sınıfını mevcut checked'e göre ayarla
+        options.forEach(function (el) {
+          if (el.checked) {
+            var card = el.closest('.avatar-option');
+            if (card) card.classList.add('selected');
+          }
+        });
+
+        // Değişince vurguyu güncelle
+        options.forEach(function (el) {
+          el.addEventListener('change', function () {
+            document.querySelectorAll('.avatar-option').forEach(function (x) {
+              x.classList.remove('selected');
+            });
+            var card = el.closest('.avatar-option');
+            if (card) card.classList.add('selected');
+          });
+        });
+      }
+
+      // --------- Saf Canvas ile dikey sütun grafik ---------
+      function initBugChart() {
+        var canvas = document.getElementById('bugChart');
+        if (!canvas) return;
+
+        var labels = ['Açık','Devam','Çözüldü'];
+        var data   = [@Model.OpenBugCount, @Model.InProgressBugCount, @Model.ResolvedBugCount];
+        var colors = ['#dc3545','#ffc107','#198754'];
+
+        function sizeCanvas() {
+          var W = canvas.parentElement?.clientWidth  || 600;
+          var H = canvas.parentElement?.clientHeight || 250;
+          var dpr = window.devicePixelRatio || 1;
+          canvas.width  = W * dpr;
+          canvas.height = H * dpr;
+          canvas.style.width  = W + 'px';
+          canvas.style.height = H + 'px';
+          var ctx = canvas.getContext('2d');
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          return { ctx, W, H };
+        }
+
+        function draw() {
+          var g = sizeCanvas();
+          var ctx = g.ctx, W = g.W, H = g.H;
+
+          var padL = 42, padR = 16, padT = 18, padB = 32;
+          var plotW = W - padL - padR;
+          var plotH = H - padT - padB;
+
+          ctx.clearRect(0, 0, W, H);
+
+          // eksen
+          ctx.strokeStyle = '#e9ecef';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(padL, padT);
+          ctx.lineTo(padL, padT + plotH);
+          ctx.lineTo(padL + plotW, padT + plotH);
+          ctx.stroke();
+
+          // ölçek
+          var maxVal = Math.max(1, Math.max.apply(null, data));
+          var ticks = Math.max(3, Math.min(6, maxVal));
+          ctx.fillStyle = '#6c757d';
+          ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, Arial';
+
+          for (var i=0; i<=ticks; i++){
+            var t = Math.round(maxVal * i / ticks);
+            var y = padT + plotH - (t / maxVal) * plotH;
+
+            ctx.strokeStyle = '#f1f3f5';
+            ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL+plotW, y); ctx.stroke();
+
+            ctx.fillStyle = '#6c757d';
+            ctx.textAlign = 'left';
+            ctx.fillText(String(t), 6, y+4);
+          }
+
+          // sütunlar
+          var n = data.length, gap = 20;
+          var barW = (plotW - gap*(n+1)) / n;
+
+          for (var k=0; k<n; k++){
+            var x = padL + gap + k*(barW+gap);
+            var h = (data[k]/maxVal) * plotH;
+            var y = padT + plotH - h;
+
+            ctx.fillStyle = colors[k];
+            ctx.fillRect(x, y, barW, h);
+
+            ctx.fillStyle = '#212529';
+            ctx.font = 'bold 12px system-ui, -apple-system, Segoe UI, Roboto, Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(String(data[k]), x + barW/2, y - 6);
+
+            ctx.fillStyle = '#495057';
+            ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, Arial';
+            ctx.fillText(labels[k], x + barW/2, padT + plotH + 18);
+          }
+        }
+
+        // İlk çizim ve responsive
+        requestAnimationFrame(draw);
+        window.addEventListener('resize', draw);
+      }
+
+      // --------- Hepsini başlat ---------
+      (function start(){
+        if (document.readyState !== 'loading') { initAvatarPicker(); initBugChart(); }
+        else document.addEventListener('DOMContentLoaded', function(){ initAvatarPicker(); initBugChart(); });
+      })();
+    </script>
+}

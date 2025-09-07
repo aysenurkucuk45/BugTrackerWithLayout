@@ -86,17 +86,25 @@
             </div>
         </div>
 
+        <!-- ✅ Kaydet & Vazgeç Butonları -->
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
+            <div class="col-md-offset-2 col-md-10 d-flex gap-2">
                 <input type="submit" value="Kaydet" class="btn btn-success" />
+                <a href="@Url.Action("Index", "Bug")"
+                   id="vazgecBtn"
+                   class="btn btn-outline-secondary fw-semibold">
+                    Vazgeç
+                </a>
             </div>
         </div>
     </div>
 }
 
+<!-- Buradaki Geri Dön linki kalsın -->
 <div>
     @Html.ActionLink("Geri Dön", "Index", null, new { @class = "btn btn-default" })
 </div>
+
 <div class="form-group">
     @Html.Label("Kategori", htmlAttributes: new { @class = "control-label col-md-2" })
     <div class="col-md-10">
